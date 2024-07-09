@@ -22,6 +22,28 @@
  *
 */
 
+/**
+ * general tasks:
+ *
+ * // implement multithreading to simulate the handling of multiple calls at the same time
+ * // note: make this project cross platform with cmake
+ *
+ * Designing tasks:
+ *
+ * Divide the classes into different files according to their similarities
+ * Here for the multithreaded feature it would be simulate the calls, i.e., a call varries in time
+ * so if an employer finishes the call afte some amount of time (simulate this with elapsed time randomly)
+ * it becomes available again
+ *
+ * The multithreaded part about this is that dispatch method should be multithreaded, i.e, multiple calls being dispatched
+ * other methods can be made multithreaded as well, e.g., the hiring process of employers (should not simulate any elapsed time
+ * of the hiring process here, just focus on simulating the dispatching of calls
+ * So the dispatch method should receive a Call instance, then the actual calls to this method will be multithreaded
+ */
+
+/**
+ */
+
 enum class CallType { Basic, Detailed, Classified };
 
 enum class EmployeeType { RespondentEmp, ManagerEmployee, DirectorEmployee };
@@ -143,20 +165,17 @@ public:
         {
             if (type == EmployeeType::RespondentEmp)
             {
-                Employee* emp = new Respondent(i);
-                employees.push_back(emp);
+                emp = new Respondent(i);
             }
             if (type == EmployeeType::ManagerEmployee)
             {
-                Employee* emp = new Manager(i);
-                employees.push_back(emp);
+                emp = new Manager(i);
             }
             if (type == EmployeeType::DirectorEmployee)
             {
-                Employee* emp = new Director(i);
-                employees.push_back(emp);
+                emp = new Director(i);
             }
-
+            employees.push_back(emp);
         }
         return employees;
     };
@@ -196,8 +215,8 @@ public:
                     {
                         (*_respondents[i]).SetEmployeeBusy(true);
                         std::cout << "Call from " << (*calls[i]).GetPhoneNo() << " with the subject on "
-                            << typeOfInfo << " information " << "was assigned to respondant with id "
-                            << (*_respondents[i]).GetEmployeeId()
+                            << typeOfInfo << " information " << "was assigned to "
+                            << (*_respondents[i]).GetEmployee()
                             << std::endl;
                         break;
                     }
@@ -212,8 +231,8 @@ public:
                     {
                         (*_managers[i]).SetEmployeeBusy(true);
                         std::cout << "Call from " << (*calls[i]).GetPhoneNo() << " with the subject on "
-                            << typeOfInfo << " information " << "was escalated to manager with id "
-                            << (*_managers[i]).GetEmployeeId()
+                            << typeOfInfo << " information " << "was escalated to "
+                            << (*_managers[i]).GetEmployee()
                             << std::endl;
                         break;
                     }
@@ -228,8 +247,8 @@ public:
                     {
                         (*_directors[i]).SetEmployeeBusy(true);
                         std::cout << "Call from " << (*calls[i]).GetPhoneNo() << " with the subject on "
-                            << typeOfInfo << " information " << "was escalated to director with id "
-                            << (*_directors[i]).GetEmployeeId()
+                            << typeOfInfo << " information " << "was escalated to "
+                            << (*_directors[i]).GetEmployee()
                             << std::endl;
                         break;
                     }
@@ -241,14 +260,12 @@ public:
                 std::cout << "There are no employees avaialable for call from "
                           << (*calls[i]).GetPhoneNo() << " with the subject on "
                           << typeOfInfo << " information "
-                          << (*_respondents[i]).GetEmployeeId()
                           << std::endl;
                 return;
             }
             typeOfInfo = "";
         }
     };
-
 };
 
 
@@ -286,7 +303,7 @@ int main()
         for (int j = 0; j < 10; j++)
         {
             generateNumber = phoneNoDistribution(generator);
-            ss << generateNumber;   
+            ss << generateNumber;
         }
         ss >> phoneNo;
         ss.clear();
@@ -297,11 +314,9 @@ int main()
         calls.push_back(call);
         generateCallType = 0;
     }
-
     callCenter.dispatchCall(calls);
 
-    // implement multithreading to simulate the handling of multiple calls at the same time
-
+    
     return 0;
 }
 
